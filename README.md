@@ -38,8 +38,8 @@ within the existing  <code>$app->group('/admin', function () {}</code> code bloc
 5.) Open the setup_app.php file and  add the module config code snippet into bottom of skeleton **[directory-for-app]/src/setup_app.php** file.
 Please check the "table_prefix" value to ensure that there will not be a clash with any existing tables in your database.
 
-6.) Now in your browser goto URL:
-Now goto URL:
+6.) Now in your browser goto URL:  
+ 
 **"http://localhost:8000/admin/asset/dashboard"** if you are using php built in server  
 OR  
 **"http://www.yourdomain.com/admin/asset/dashboard"** if you have configured a domain on your server  
