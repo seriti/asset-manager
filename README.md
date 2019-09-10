@@ -20,17 +20,17 @@ That said, if you are an experienced PHP programmer you will have no problem doi
 
 1.) Install Seriti Skeleton framework(see the framework readme for detailed instructions) : 
     **composer create-project seriti/slim3-skeleton [directory-for-app]**. 
-    Make sure that you have thsi working before you proceed.
+    Make sure that you have this working before you proceed.
 
 2.) Download a copy of Asset manager module source code directly from github and unzip,
 or by using **git clone https://github.com/seriti/asset-manager** from command line.
 Once you have a local copy of module code check that it has following structure:
 
-/Asset/(all module implementation classes are in this folder)<br/>
-/setup_add.php<br/>
-/routes.php<br/>
+/Asset/(all module implementation classes are in this folder)  
+/setup_add.php  
+/routes.php  
 
-3.) Copy the "Asset" folder and all its contents into **[directory-for-app]/app** folder.
+3.) Copy the **Asset** folder and all its contents into **[directory-for-app]/app** folder.
 
 4.) Open the routes.php file and insert the <code>$this->group('/asset', function (){}</code> route definition block
 within the existing  <code>$app->group('/admin', function () {}</code> code block contained in existing skeleton **[directory-for-app]/src/routes.php** file.
@@ -40,9 +40,9 @@ Please check the "table_prefix" value to ensure that there will not be a clash w
 
 6.) Now in your browser goto URL:
 Now goto URL:
-**http://localhost:8000/admin/asset/dashboard** if you are using php built in server
-OR 
-**http://www.yourdomain.com/admin/asset/dashboard** if you have configured a domain on your server
+**"http://localhost:8000/admin/asset/dashboard"** if you are using php built in server  
+OR  
+**"http://www.yourdomain.com/admin/asset/dashboard"** if you have configured a domain on your server  
 
 Now click link at bottom of page "Setup Database": This will create all necessary database tables with table_prefix as defined above.
 Thats it, you are good to go. Create your first portfolios and assets and start capturing transactions. 
