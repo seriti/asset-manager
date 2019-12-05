@@ -42,6 +42,11 @@ class Dashboard extends DashboardTool
         $error = '';
         $options = [];
         
+        //NB: after setting up module tables you can remove this. Just to prevent DB error on first install
+        $table = TABLE_PREFIX.'asset';
+        if(!$this->db->checkTableExists($table)) return $js;
+
+
         //get stats for ALL portfolios
         $stats = Helpers::getDashboardStats($this->db,CURRENCY_ID,$options,$error);
         

@@ -15,7 +15,7 @@ class Cash extends Table
         $param = ['row_name'=>'Cashflow','col_label'=>'description'];
         parent::setup($param);  
 
-        $this->modifyAccess(['edit'=>false,'add'=>false]); 
+        //$this->modifyAccess(['edit'=>false,'add'=>false]); 
 
         //adds these values to any new transactions
         $this->addColFixed(['id'=>'date_create','value'=>date('Y-m-d')]);

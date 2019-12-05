@@ -156,8 +156,7 @@ class SetupData extends SetupModuledata
                              'VALUES("'.CURRENCY_ID.'","'.CURRENCY_ID.'","'.CURRENCY_ID.'","5","OK")');
 
         $this->addInitialSql('INSERT INTO `TABLE_PREFIXasset` (name,description,status,type_id,currency_id) '.
-                             'VALUES("Bank/Trading account","Default bank/trading account","OK","CASH")');
-        
+                             'VALUES("Bank/Trading account","Default bank/trading account","OK","CASH","'.CURRENCY_ID.'")');
 
         //updates use time stamp in ['YYYY-MM-DD HH:MM'] format, must be unique and sequential
         //$this->addUpdateSql('YYYY-MM-DD HH:MM','Update TABLE_PREFIX--- SET --- "X"');

@@ -25,8 +25,6 @@ class Helpers {
 
         if(!isset($options['no_months'])) {
             $period = self::getTransactionPeriod($db,'ALL');
-            
-            if($period['hist_months'] > 12) die('WTF');
             if($period['hist_months'] > 12) $options['no_months'] = 12; else $options['no_months'] = $period['hist_months'];
         } 
 
