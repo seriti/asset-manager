@@ -33,7 +33,4 @@ class AssetPrice extends Table
         $this->addSelect('asset_id','SELECT asset_id,name FROM '.TABLE_PREFIX.'asset WHERE type_id <> "CASH" ORDER BY name'); 
         $this->addSelect('month',['list'=>MONTH_LIST]); 
     }
-}            
-
-?>
-                                                
+} 

@@ -28,5 +28,3 @@ class AssetNote extends Table
         $this->addSearch(array('notes','date'),array('rows'=>1));
     }    
 }
-
-?>

@@ -41,6 +41,4 @@ class Portfolio extends Table
         $this->addSelect('currency_id','SELECT currency_id,name FROM '.TABLE_PREFIX.'currency ORDER BY name');
     }
      
-}            
-
-?>
+}

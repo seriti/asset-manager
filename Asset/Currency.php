@@ -30,7 +30,4 @@ class Currency extends Table
             
         $this->addSelect('status','(SELECT "OK") UNION (SELECT "HIDE")');
     }
-}            
-
-?>
-                                                
+} 

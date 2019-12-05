@@ -171,12 +171,8 @@ class SetupData extends SetupModuledata
             $this->process_count++;
             $this->addMessage($message);
         }    
-      /*
+      */
 
     }
     
 }
-
-
-  
-?>

@@ -44,7 +44,4 @@ class Period extends Table
         $days = Date::calcDays($form['date_start'],$form['date_end'],'MYSQL',$date_options);
         if($days < 30) $error_str .= 'Period end date must be at least 30 days after start date'; 
     }
-}            
-
-?>
-                                                
+}

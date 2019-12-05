@@ -35,4 +35,3 @@ class AssetFile extends Upload
         //$this->modifyAccess($access);
     }
 }
-?>

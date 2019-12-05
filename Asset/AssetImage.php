@@ -40,4 +40,3 @@ class AssetImage extends Upload
         //$this->modifyAccess($access);
     }
 }
-?>

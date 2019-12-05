@@ -81,4 +81,3 @@ class Cash extends Table
     }
      
 }
-?>

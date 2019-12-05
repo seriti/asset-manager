@@ -74,7 +74,4 @@ class Asset extends Table
         $sql = 'DELETE FROM '.TABLE_PREFIX.'note WHERE location_id = "ASSET'.$this->db->escapeSql($id).'" ';
         $this->db->executeSql($sql,$error);
     } 
-}            
-
-?>
-                                                
+} 

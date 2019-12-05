@@ -163,5 +163,3 @@ class Report extends ReportTool
     }
 
 }
-
-?>

@@ -29,7 +29,4 @@ class Price extends Table
 
         $this->addSelect('asset_id','SELECT asset_id,name FROM '.TABLE_PREFIX.'asset WHERE type_id <> "CASH" ORDER BY name'); 
     }
-}            
-
-?>
-                                                
+}

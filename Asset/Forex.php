@@ -26,7 +26,6 @@ class Forex extends Table
         $this->addSearch(array('currency_id_transact','year','month','rate'),array('rows'=>1));
 
         $this->addSelect('currency_id_transact','SELECT currency_id, name FROM '.TABLE_PREFIX.'currency ORDER BY currency_id');
+        $this->addSelect('currency_id_portfolio','SELECT currency_id, name FROM '.TABLE_PREFIX.'currency ORDER BY currency_id');
     }    
 }
-
-?>

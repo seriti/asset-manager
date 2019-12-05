@@ -11,14 +11,16 @@ class Task extends SeritiTask
 {
     public function setup()
     {
-        $this->addTask('ALL_PORTFOLIOS','Manage portfolios');
-        $this->addTask('SETUP_PERIODS','Manage portfolio reporting periods');
+        $this->addBlock('PORTFOLIO',1,1,'Portfolio setup');
+        $this->addTask('PORTFOLIO','ALL_PORTFOLIOS','Manage portfolios');
+        $this->addTask('PORTFOLIO','SETUP_PERIODS','Manage portfolio reporting periods');
 
-        $this->addTask('SETUP_FOREX','Manage currency exchange rates');
-        $this->addTask('SETUP_CURRENCIES','Manage All currencies');
+        $this->addBlock('CURRENCY',1,2,'Currency setup');
+        $this->addTask('CURRENCY','SETUP_FOREX','Manage currency exchange rates');
+        $this->addTask('CURRENCY','SETUP_CURRENCIES','Manage All currencies');
     }
 
-    function processTask($id,$param = []) {
+    public function processTask($id,$param = []) {
         $error = '';
         $message = '';
         $n = 0;
@@ -50,5 +52,3 @@ class Task extends SeritiTask
            
     }
 }
-?>
-                                                
