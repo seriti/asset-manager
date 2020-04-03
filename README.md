@@ -27,7 +27,7 @@ or by using **git clone https://github.com/seriti/asset-manager** from command l
 Once you have a local copy of module code check that it has following structure:
 
 /Asset/(all module implementation classes are in this folder)  
-/setup_add.php  
+/setup_app.php  
 /routes.php  
 
 3.) Copy the **Asset** folder and all its contents into **[directory-for-app]/app** folder.
@@ -43,8 +43,10 @@ Please check the "table_prefix" value to ensure that there will not be a clash w
 **"http://localhost:8000/admin/asset/dashboard"** if you are using php built in server  
 OR  
 **"http://www.yourdomain.com/admin/asset/dashboard"** if you have configured a domain on your server  
+OR
+Click **Dashboard** menu option and you will see list of available modules, click **Asset manager**  
 
-Now click link at bottom of page "Setup Database": This will create all necessary database tables with table_prefix as defined above.
+Now click link at bottom of page **Setup Database**: This will create all necessary database tables with table_prefix as defined above.
 Thats it, you are good to go. Create your first portfolios and assets and start capturing transactions. 
 Portfolios and assets are assigned a currency which are used to generate reports in any currency. Percentage monthly performance attribution
 allows you to compare all assets regardless of whether it is a share portfolio or a motor vehicle.
