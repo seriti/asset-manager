@@ -39,13 +39,13 @@ class Asset extends Table
         $this->setupImages(array('table'=>TABLE_PREFIX.'file','location'=>'ASSIMG','max_no'=>100,
                                   'icon'=>'<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>&nbsp;manage',
                                   'list'=>true,'list_no'=>1,'storage'=>STORAGE,
-                                  'link_page'=>'asset_image','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
+                                  'link_url'=>'asset_image','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
 
                                   
         $this->setupFiles(array('table'=>TABLE_PREFIX.'file','location'=>'ASSDOC','max_no'=>100,
                                 'icon'=>'<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp;&nbsp;manage',
                                 'list'=>true,'list_no'=>1,'storage'=>STORAGE,
-                                'link_page'=>'asset_file','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
+                                'link_url'=>'asset_file','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
     }
 
     protected function modifyRowValue($col_id,$data,&$value) {
