@@ -17,7 +17,7 @@ class Currency extends Table
         $this->addForeignKey(array('table'=>TABLE_PREFIX.'portfolio','col_id'=>'currency_id','message'=>'Portfolio exists for this currency'));  
 
         $this->addTableCol(array('id'=>'currency_id','type'=>'STRING','title'=>'Currency ID','max'=>4,'key'=>true,'list'=>true));
-        $this->addTableCol(array('id'=>'name','type'=>'STRING','title'=>'Asset name'));
+        $this->addTableCol(array('id'=>'name','type'=>'STRING','title'=>'Currency name'));
         $this->addTableCol(array('id'=>'symbol','type'=>'STRING','title'=>'Symbol'));
         $this->addTableCol(array('id'=>'risk_free_rate','type'=>'DECIMAL','title'=>'Risk free rate(%)','new'=>'5'));
         $this->addTableCol(array('id'=>'status','type'=>'STRING','title'=>'Status','new'=>'OK'));

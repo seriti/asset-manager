@@ -8,6 +8,8 @@ copy the "/asset" group into the existing "/admin" group within existing "src/ro
 $app->group('/admin', function () {
 
     $this->group('/asset', function () {
+        $this->post('/ajax', \App\Asset\Ajax::class);
+        $this->any('/account', \App\Asset\AccountController::class);
         $this->any('/asset', \App\Asset\AssetController::class);
         $this->any('/asset_note', \App\Asset\AssetNoteController::class);
         $this->any('/asset_price', \App\Asset\AssetPriceController::class);
@@ -23,11 +25,10 @@ $app->group('/admin', function () {
         $this->any('/portfolio', \App\Asset\PortfolioController::class);
         $this->any('/report', \App\Asset\ReportController::class);
         $this->any('/task', \App\Asset\TaskController::class);
-        $this->post('/ajax', \App\Asset\Ajax::class);
         $this->get('/setup_data', \App\Asset\SetupDataController::class);
-    })->add(\App\Asset\Config::class);
+    })->add(\App\Asset\Config::class); 
 
-})->add(\App\ConfigAdmin::class);
+})->add(\App\User\ConfigAdmin::class);
 
 
 

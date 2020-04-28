@@ -18,6 +18,12 @@ class Task extends SeritiTask
         $this->addBlock('CURRENCY',1,2,'Currency setup');
         $this->addTask('CURRENCY','SETUP_FOREX','Manage currency exchange rates');
         $this->addTask('CURRENCY','SETUP_CURRENCIES','Manage All currencies');
+
+        if(ACCOUNT_SETUP) {
+            $this->addBlock('ACCOUNT',1,3,'Account hierarchy');
+            $this->addTask('ACCOUNT','SETUP_ACCOUNT','Manage accounts');
+
+        }
     }
 
     public function processTask($id,$param = []) {
@@ -46,6 +52,12 @@ class Task extends SeritiTask
         
         if($id === 'ALL_PORTFOLIOS') {
             $location = 'portfolio';
+            header('location: '.$location);
+            exit;
+        }
+
+        if($id === 'SETUP_ACCOUNT') {
+            $location = 'account';
             header('location: '.$location);
             exit;
         }

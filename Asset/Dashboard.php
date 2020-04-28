@@ -46,10 +46,9 @@ class Dashboard extends DashboardTool
         $table = TABLE_PREFIX.'asset';
         if(!$this->db->checkTableExists($table)) return $js;
 
-
         //get stats for ALL portfolios
         $stats = Helpers::getDashboardStats($this->db,CURRENCY_ID,$options,$error);
-        
+
         if($error === '') {
             $charts = new GoogleChart();
 

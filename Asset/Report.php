@@ -17,31 +17,51 @@ class Report extends ReportTool
         $this->report_select_title = 'Select report';
         $this->always_list_reports = true;
 
+
         $param = ['input'=>['select_portfolio','select_currency','select_month_period']];
+        if(ACCOUNT_SETUP) $param['input'][] = 'select_account';
         $this->addReport('PERFORMANCE','Monthly performance',$param); 
         $this->addReport('PERFORMANCE_CHART','Monthly performance chart',$param);
 
         $param = ['input'=>['select_portfolio','select_currency','select_period']];
+        if(ACCOUNT_SETUP) $param['input'][] = 'select_account';
         $this->addReport('PERFORMANCE_PERIOD','Monthly performance over period',$param);
         
         $param = ['input'=>['select_portfolio','select_currency','select_month_period']];
+        if(ACCOUNT_SETUP) $param['input'][] = 'select_account';
         $this->addReport('ASSET_BALANCES','Monthly asset balances',$param);  
         $this->addReport('ASSET_BALANCES_CHART','Monthly asset balances chart',$param);
 
         $param = ['input'=>['select_portfolio','select_currency','select_period']];
+        if(ACCOUNT_SETUP) $param['input'][] = 'select_account';
         $this->addReport('ASSET_BALANCES_PERIOD','Monthly asset balances over period',$param);
 
+        if(ACCOUNT_SETUP) {
+            $this->addInput('select_account',''); //select portfolio account hierarchy 
+        }
         $this->addInput('select_portfolio','');
         $this->addInput('select_currency',''); //Combine All portfolios
         $this->addInput('select_month_period',''); //Select report months
         $this->addInput('select_period',''); //Select report period
         $this->addInput('select_format',''); //Select Report format
+
+        
     }
 
     protected function viewInput($id,$form = []) 
     {
         $html = '';
         
+        if($id === 'select_account') {
+            $param = [];
+            $param['class'] = 'form-control input-medium';
+            $param['xtra'] = ['ALL'=>'All accounts'];
+            $param['onchange'] = 'account_change()';
+            $sql = 'SELECT id,CONCAT(IF(level > 1,REPEAT("--",level - 1),""),title) FROM '.TABLE_PREFIX.'account  ORDER BY rank';
+            if(isset($form['account_id'])) $account_id = $form['account_id']; else $account_id = 'ALL';
+            $html .= Form::sqlList($sql,$this->db,'account_id',$account_id,$param);
+        }
+
         if($id === 'select_portfolio') {
             $param = [];
             $param['class'] = 'form-control input-medium';
@@ -119,6 +139,12 @@ class Report extends ReportTool
         $options = [];
         //$options['format'] = $form['format'];
 
+        if(ACCOUNT_SETUP) {
+            $account_id = $form['account_id'];
+        } else {
+            $account_id = 'ALL';
+        }    
+
         if($form['portfolio_id'] === 'ALL') {
             $html .= '<h2>(ALL PORTFOLIOS, values expressed in currency - '.$form['currency_id'].')</h2>';
         } else {
@@ -127,39 +153,88 @@ class Report extends ReportTool
         }    
         
         if($id === 'PERFORMANCE') {
-            $html .= Helpers::performanceReport($this->db,$form['portfolio_id'],$form['currency_id'],$form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
+            $html .= Helpers::performanceReport($this->db,$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                $form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
 
         if($id === 'PERFORMANCE_PERIOD') {
             $period = Helpers::getPeriod($this->db,$form['period_id']);
-            $html .= Helpers::performanceReport($this->db,$form['portfolio_id'],$form['currency_id'],$period['start_month'],$period['start_year'],$period['end_month'],$period['end_year'],$options,$error);
+            $html .= Helpers::performanceReport($this->db,$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                $period['start_month'],$period['start_year'],$period['end_month'],$period['end_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
 
         if($id === 'PERFORMANCE_CHART') {
-            $html .= Helpers::getPortfolioChart($this->db,'performance',$form['portfolio_id'],$form['currency_id'],$form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
+            $html .= Helpers::getPortfolioChart($this->db,'performance',$account_id,$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                $form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
         
 
         if($id === 'ASSET_BALANCES') {
-            $html .= Helpers::assetBalancesReport($this->db,$form['portfolio_id'],$form['currency_id'],$form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
+            $html .= Helpers::assetBalancesReport($this->db,$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                  $form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
 
         if($id === 'ASSET_BALANCES_PERIOD') {
             $period = Helpers::getPeriod($this->db,$form['period_id']);
-            $html .= Helpers::assetBalancesReport($this->db,$form['portfolio_id'],$form['currency_id'],$period['start_month'],$period['start_year'],$period['end_month'],$period['end_year'],$options,$error);
+            $html .= Helpers::assetBalancesReport($this->db,$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                  $period['start_month'],$period['start_year'],$period['end_month'],$period['end_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
 
         if($id === 'ASSET_BALANCES_CHART') {
-            $html .= Helpers::getPortfolioChart($this->db,'assets',$form['portfolio_id'],$form['currency_id'],$form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
+            $html .= Helpers::getPortfolioChart($this->db,'assets',$account_id,$form['portfolio_id'],$form['currency_id'],
+                                                $form['from_month'],$form['from_year'],$form['to_month'],$form['to_year'],$options,$error);
             if($error !== '') $this->addError($error);
         }
 
         return $html;
+    }
+
+    //NB: this is in addition to statndard Report->getJavascript()
+    public function getJavascriptXtra()
+    {
+        $js = "
+        <script type='text/javascript'>
+        $(document).ready(function() {
+            if(form = document.getElementById('report_form')) {
+                account_change();
+            }
+        });
+
+        function account_change() {
+            var form = document.getElementById('report_form');
+            var account_id = form.account_id.value;
+            var portfolio_id = form.portfolio_id.value;
+            
+            var param = 'account_id='+account_id;
+            xhr('ajax?mode=account_portfolios',param,show_portfolio_list,portfolio_id);
+              
+        } 
+
+        function show_portfolio_list(str,portfolio_id) {
+            //alert('Result'+str);
+            if(str.substring(0,5) === 'ERROR') {
+                alert(str);
+            } else {  
+                var portfolios = $.parseJSON(str);
+                var sel = '';
+                //use jquery to reset account select list
+                $('#portfolio_id option').remove();
+                $.each(portfolios, function(i,item){
+                    // Create and append the new options into the select list
+                    if(i == portfolio_id) sel = 'SELECTED'; else sel = '';
+                    $('#portfolio_id').append('<option value='+i+' '+sel+'>'+item+'</option>');
+                });
+            }    
+        }
+        </script>";
+
+        return $js;
+
     }
 
 }

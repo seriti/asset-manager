@@ -23,8 +23,11 @@ class Helpers {
         $perform = [];
         $assets = [];
 
+        $account_id = 'ALL';
+        $portfolio_id = 'ALL';
+
         if(!isset($options['no_months'])) {
-            $period = self::getTransactionPeriod($db,'ALL');
+            $period = self::getTransactionPeriod($db,$portfolio_id);
             if($period['hist_months'] > 12) $options['no_months'] = 12; else $options['no_months'] = $period['hist_months'];
         } 
 
@@ -43,11 +46,11 @@ class Helpers {
        
         $options_pf = ['output'=>'DATA'];
         $error_pf = '';
-        $perform = self::getPortfolioChart($db,'performance','ALL',$currency_id,$from['month'],$from['year'],$to['month'],$to['year'],$options_pf,$error_pf);
+        $perform = self::getPortfolioChart($db,'performance',$account_id,$portfolio_id,$currency_id,$from['month'],$from['year'],$to['month'],$to['year'],$options_pf,$error_pf);
         if($error_pf !== '') {
             $error .= 'No performance data available: '.$error_pf;
         } else {   
-            $data = self::assetBalancesReport($db,'ALL',$currency_id,$to['month'],$to['year'],$to['month'],$to['year'],$options_pf,$error_pf); 
+            $data = self::assetBalancesReport($db,$account_id,$portfolio_id,$currency_id,$to['month'],$to['year'],$to['month'],$to['year'],$options_pf,$error_pf); 
             if($error_pf !== '') {
                 $error .= 'No asset balances available: '.$error_pf;
             } else {  
@@ -68,7 +71,7 @@ class Helpers {
         return $stats;
     }
 
-    public static function getPortfolioChart($db,$type,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error) {
+    public static function getPortfolioChart($db,$type,$account_id,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error) {
         $error = '';
          
         //NB $options['width'] and $options['height'] will use container if not specified
@@ -76,7 +79,7 @@ class Helpers {
 
         if($type === 'assets') {
             $chart_type = 'bar';
-            $assets = self::getPortfolioAssets($db,$portfolio_id,$error);
+            $assets = self::getPortfolioAssets($db,$account_id,$portfolio_id,$error);
             $title = 'Monthly asset values';
             $y_axis = 'asset value in '.$currency_id;
             $stacked = true;
@@ -126,6 +129,8 @@ class Helpers {
         } else {    
             //need to combine multiple portfolios data
             $options_pf = ['output'=>'DATA'];
+            //pf_id specified so account ignored
+            $acc_id_tmp = 'ALL';
             
             foreach($portfolios as $pf_id=>$name) {
                 $error_pf = '';
@@ -133,7 +138,8 @@ class Helpers {
                 if($type === 'performance') {
                     $chart_series[] = $name;
 
-                    $data = self::performanceReport($db,$pf_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options_pf,$error_pf);
+                    //need to add account_id
+                    $data = self::performanceReport($db,$acc_id_tmp,$pf_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options_pf,$error_pf);
                     $m = 0;
                     foreach($months as $month) {
                         $key = $month['year'].':'.$month['mon'];
@@ -152,7 +158,7 @@ class Helpers {
                 }    
 
                 if($type === 'assets') {
-                    $data = self::assetBalancesReport($db,$pf_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options_pf,$error_pf);
+                    $data = self::assetBalancesReport($db,$acc_id_tmp,$pf_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options_pf,$error_pf);
                     $m = 0;
                     foreach($months as $month) {
                         $key = $month['year'].':'.$month['mon'];
@@ -220,6 +226,17 @@ class Helpers {
 
         return false;
     }  
+
+    //NB: Account table is a tree
+    public static function getAccount($db,$account_id) {
+        $sql = 'SELECT id,parent_id,title AS name,level,lineage,currency_id '.
+               'FROM '.TABLE_PREFIX.'account '.
+               'WHERE id = "'.$db->escapeSql($account_id).'" ';
+        $account = $db->readSqlRecord($sql);
+        if($account == 0) throw new Exception('ACCOUNT_HELPER_ERROR: INVALID Account ID['.$account_id.']');
+        
+        return $account;
+    } 
 
     public static function getPortfolio($db,$portfolio_id) {
         $sql = 'SELECT portfolio_id AS id,name,description,status,date_start,date_end,currency_id,calc_timestamp '.
@@ -359,16 +376,30 @@ class Helpers {
     }
 
     //NB: returns all assets that have transactions, not all assets
-    public static function getPortfolioAssets($db,$portfolio_id,&$error)  {
+    public static function getPortfolioAssets($db,$account_id,$portfolio_id,&$error)  {
         $error = '';
        
+        $sql = 'SELECT DISTINCT(T.asset_id),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
+               'FROM  '.TABLE_PREFIX.'transact AS T '.
+                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id = A.asset_id) '.
+                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '; 
+        if($portfolio_id !== 'ALL') {
+            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
+        } elseif($account_id !== 'ALL') {
+            $sql .= 'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '.
+                    'WHERE (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';
+        }
+
+        /*
         $sql = 'SELECT DISTINCT(T.asset_id),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
                'FROM  '.TABLE_PREFIX.'transact AS T '.
                       'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id = A.asset_id) '.
                       'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) ';
         if($portfolio_id !== 'ALL') {
             $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        }       
+        }  
+        */
+
         $sql .= 'ORDER BY P.name , A.name ';
         $assets = $db->readSqlArray($sql);
         if($assets === 0) {
@@ -376,7 +407,18 @@ class Helpers {
             return false;
         }
 
-        //sometimes no trades booked directly to linked assets
+        //NB:sometimes no trades booked directly to linked assets
+        $sql = 'SELECT DISTINCT(T.asset_id_link),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
+               'FROM  '.TABLE_PREFIX.'transact AS T '.
+                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id_link = A.asset_id) '.
+                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) ';
+        if($portfolio_id !== 'ALL') {
+            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
+        } elseif($account_id !== 'ALL') {
+            $sql .= 'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '.
+                    'WHERE (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';
+        }              
+        /*
         $sql = 'SELECT DISTINCT(T.asset_id_link),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
                'FROM  '.TABLE_PREFIX.'transact AS T '.
                       'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id_link = A.asset_id) '.
@@ -384,6 +426,7 @@ class Helpers {
         if($portfolio_id !== 'ALL') {
             $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
         } 
+        */
         $assets_linked = $db->readSqlArray($sql);
         if($assets_linked !== 0) {
             //do NOT use array_merge() it will overwrite asset_id key!!
@@ -633,7 +676,7 @@ class Helpers {
     }      
 
     //gets initial nominal trade and cash balances using all transactions BEFORE balance date
-    public static function getNominalBalances($db,$portfolio_id,$assets = [],$date_balance)  {
+    public static function getNominalBalances($db,$account_id,$portfolio_id,$assets = [],$date_balance)  {
         $balances = [];
         
         //initialise balances for all requested assets
@@ -642,6 +685,26 @@ class Helpers {
            $balances[$asset_id] = 0; 
         }
 
+        //setup sql fragments
+        $sql_join = '';
+        $sql_where = 'WHERE T.date < "'.$db->escapeSql($date_balance).'"  ';
+
+        if($portfolio_id !== 'ALL') {
+            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+        } elseif($account_id !== 'ALL') {
+            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
+                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+
+            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+        }
+        //final sql statement
+        $sql = 'SELECT T.asset_id,T.asset_id_link,T.type_id,SUM(T.nominal) AS net_nominal,SUM(T.amount) AS net_amount '.
+               'FROM  '.TABLE_PREFIX.'transact AS T '.
+               $sql_join.$sql_where.
+               'GROUP BY T.asset_id,T.asset_id_link,T.type_id ';
+               
+
+        /*    
         //could do all in query with if statements if speed ever an issue
         $sql = 'SELECT T.asset_id,T.asset_id_link,T.type_id,SUM(T.nominal) AS net_nominal,SUM(T.amount) AS net_amount '.
                'FROM  '.TABLE_PREFIX.'transact AS T '.
@@ -650,6 +713,8 @@ class Helpers {
             $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
         } 
         $sql .= 'GROUP BY T.asset_id,T.asset_id_link,T.type_id ';
+        */
+
         $first_col_key = false;
         $transact_nominals = $db->readSqlArray($sql,$first_col_key);
         if($transact_nominals !== 0) {
@@ -676,7 +741,7 @@ class Helpers {
         return $balances;
     }
 
-    public static function performanceReport($db,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error)  {
+    public static function performanceReport($db,$account_id,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error)  {
         $error = '';
         $error_tmp = '';
         $html = '';
@@ -688,7 +753,7 @@ class Helpers {
         if($error_tmp !== '') $error .= $error_tmp;
 
         //get all assets with transactions
-        $assets = self::getPortfolioAssets($db,$portfolio_id,$error_tmp);
+        $assets = self::getPortfolioAssets($db,$account_id,$portfolio_id,$error_tmp);
         if($error_tmp !== '') $error .= $error_tmp;
 
         if($error !== '') return false;
@@ -718,7 +783,7 @@ class Helpers {
         $initial_balance_month = array_shift($performance_months);
         
         //get initial asset nominal balances from all transactions since inception up to start date
-        $balances = self::getNominalBalances($db,$portfolio_id,$assets,$date_from);
+        $balances = self::getNominalBalances($db,$account_id,$portfolio_id,$assets,$date_from);
         $month_start_value=0;
         $month_key = $initial_balance_month['year'].':'.$initial_balance_month['mon'];
         foreach($assets as $asset_id => $asset) {
@@ -730,7 +795,29 @@ class Helpers {
         //balances modified as step through performance months
         $performance = [];
 
-        //finally process all transactions over report period
+        
+        //setup sql fragments
+        $sql_join = 'JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) ';
+        $sql_where = 'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
+                           'T.date <= "'.$db->escapeSql($date_to).'"  ';
+
+        if($portfolio_id !== 'ALL') {
+            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+        } elseif($account_id !== 'ALL') {
+            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
+                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+
+            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+        }
+        //final sql statement
+        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
+                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
+               'FROM  '.TABLE_PREFIX.'transact AS T '.
+               $sql_join.$sql_where.
+               'ORDER BY T.date ';
+                      
+
+        /*       
         $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
                       'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
                'FROM  '.TABLE_PREFIX.'transact AS T JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) '.
@@ -740,6 +827,9 @@ class Helpers {
             $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
         }             
         $sql .= 'ORDER BY T.date ';
+        */
+
+        //finally process all transactions over report period
         $transactions = $db->readSqlArray($sql);           
         
         foreach($performance_months as $month) {
@@ -832,7 +922,7 @@ class Helpers {
         return false;     
     }
 
-    public static function assetBalancesReport($db,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error)  {
+    public static function assetBalancesReport($db,$account_id,$portfolio_id,$currency_id,$from_month,$from_year,$to_month,$to_year,$options = [],&$error)  {
         $error = '';
         $error_tmp = '';
         $html = '';
@@ -844,7 +934,7 @@ class Helpers {
         if($error_tmp !== '') $error .= $error_tmp;
 
         //get all assets with transactions
-        $assets = self::getPortfolioAssets($db,$portfolio_id,$error_tmp);
+        $assets = self::getPortfolioAssets($db,$account_id,$portfolio_id,$error_tmp);
         if($error_tmp !== '') $error .= $error_tmp;
 
         if($error !== '') return false;
@@ -874,7 +964,7 @@ class Helpers {
         
         //get initial asset nominal balances from all transactions since inception up to start date
         //all months will include data for all assets that occur over entire period
-        $balances = self::getNominalBalances($db,$portfolio_id,$assets,$date_from);
+        $balances = self::getNominalBalances($db,$account_id,$portfolio_id,$assets,$date_from);
         $month_key = $initial_balance_month['year'].':'.$initial_balance_month['mon'];
         
         $period = [];
@@ -885,7 +975,28 @@ class Helpers {
             $period[$asset_id]['start_value'] = round(($balances[$asset_id] * $asset_prices[$asset_id][$month_key] * $asset_forex[$asset['currency_id']][$month_key]),2);
         }
        
-        //process all transactions over report period
+        //NB: IDENTICAL SQL CODE IN PERFORMANCE REPORT, NEED TO CONSOLIDATE
+        //setup sql fragments
+        $sql_join = 'JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) ';
+        $sql_where = 'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
+                           'T.date <= "'.$db->escapeSql($date_to).'"  ';
+
+        if($portfolio_id !== 'ALL') {
+            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+        } elseif($account_id !== 'ALL') {
+            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
+                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+
+            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+        }
+        //final sql statement
+        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
+                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
+               'FROM  '.TABLE_PREFIX.'transact AS T '.
+               $sql_join.$sql_where.
+               'ORDER BY T.date ';
+
+        /*       
         $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
                       'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
                'FROM  '.TABLE_PREFIX.'transact AS T JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) '.
@@ -895,7 +1006,9 @@ class Helpers {
             $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
         } 
         $sql .= 'ORDER BY T.date ';
+        */
 
+        //process all transactions over report period
         $transactions = $db->readSqlArray($sql);           
         
         foreach($balance_months as $month) {

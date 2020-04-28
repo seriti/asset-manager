@@ -11,11 +11,25 @@ class SetupData extends SetupModuledata
 
     public function setupSql()
     {
-        $this->tables = ['portfolio','asset','currency','transact','period','file','note','price','forex'];
+        $this->tables = ['account','portfolio','asset','currency','transact','period','file','note','price','forex'];
+
+        $this->addCreateSql('account',
+                            'CREATE TABLE `TABLE_NAME` (
+                              `id` int(11) NOT NULL AUTO_INCREMENT,
+                              `id_parent` int(11) NOT NULL,
+                              `title` varchar(255) NOT NULL,
+                              `level` int(11) NOT NULL,
+                              `lineage` varchar(255) NOT NULL,
+                              `rank` int(11) NOT NULL,
+                              `rank_end` int(11) NOT NULL,
+                              `currency_id` varchar(4) NOT NULL,
+                              PRIMARY KEY (`id`)
+                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8'); 
 
         $this->addCreateSql('portfolio',
                             'CREATE TABLE `TABLE_NAME` (
                               `portfolio_id` int(11) NOT NULL AUTO_INCREMENT,
+                              `account_id` int(11) NOT NULL,
                               `name` varchar(255) NOT NULL,
                               `description` text NOT NULL,
                               `currency_id` varchar(4) NOT NULL,
@@ -159,7 +173,7 @@ class SetupData extends SetupModuledata
                              'VALUES("Bank/Trading account","Default bank/trading account","OK","CASH","'.CURRENCY_ID.'")');
 
         //updates use time stamp in ['YYYY-MM-DD HH:MM'] format, must be unique and sequential
-        //$this->addUpdateSql('YYYY-MM-DD HH:MM','Update TABLE_PREFIX--- SET --- "X"');
+        $this->addUpdateSql('2020-04-27 12:00','ALTER TABLE `TABLE_PREFIXportfolio` ADD COLUMN `account_id` INT NOT NULL AFTER `portfolio_id`');
     }
 
 

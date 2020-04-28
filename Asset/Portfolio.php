@@ -24,6 +24,9 @@ class Portfolio extends Table
         $this->addForeignKey(array('table'=>TABLE_PREFIX.'transact','col_id'=>'portfolio_id','message'=>'Transaction'));
 
         $this->addTableCol(array('id'=>'portfolio_id','type'=>'INTEGER','title'=>'Portfolio ID','key'=>true,'key_auto'=>true,'list'=>false));
+        if(ACCOUNT_SETUP) {
+            $this->addTableCol(array('id'=>'account_id','type'=>'INTEGER','title'=>'Account','join'=>'title FROM '.TABLE_PREFIX.'account WHERE id'));
+        }
         $this->addTableCol(array('id'=>'name','type'=>'STRING','title'=>'Portfolio name'));
         $this->addTableCol(array('id'=>'description','type'=>'STRING','title'=>'Description','size'=>40,'required'=>false));
         $this->addTableCol(array('id'=>'date_start','type'=>'DATE','title'=>'Date start','new'=>date('Y-m-d')));
@@ -39,6 +42,11 @@ class Portfolio extends Table
           
         $this->addSelect('status','(SELECT "OK") UNION (SELECT "INACTIVE")');
         $this->addSelect('currency_id','SELECT currency_id,name FROM '.TABLE_PREFIX.'currency ORDER BY name');
+
+        if(ACCOUNT_SETUP) {
+            $sql_account = 'SELECT id,CONCAT(IF(level > 1,REPEAT("--",level - 1),""),title) FROM '.TABLE_PREFIX.'account  ORDER BY rank';
+            $this->addSelect('account_id',$sql_account);
+        }
     }
      
 }

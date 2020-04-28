@@ -44,6 +44,9 @@ class Config
         define('MODULE_LOGO','<img src="'.BASE_URL.'images/assets48.png"> ');
         define('MODULE_PAGE',URL_CLEAN_LAST);
 
+        //make true if you wish to have a multi level account hierarchy for portfolios 
+        define('ACCOUNT_SETUP',false);
+
         define('ASSET_TYPE',['EXCHANGE'=>'Exchange traded instrument',
                              'FUND'=>'Non-exchange traded fund',
                              'CASH'=>'Bank/Moneymarket/Trading account',

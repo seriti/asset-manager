@@ -27,6 +27,10 @@ class ReportController
         $template['title'] = MODULE_LOGO.'Portfolio Reports';
         $template['javascript'] = $report->getJavascript();
 
+        if(ACCOUNT_SETUP) {
+            $template['javascript'] .= $report->getJavascriptXtra();
+        }
+
         return $this->container->view->render($response,'admin.php',$template);
     }
 }
