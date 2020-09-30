@@ -229,7 +229,7 @@ class Helpers {
 
     //NB: Account table is a tree
     public static function getAccount($db,$account_id) {
-        $sql = 'SELECT id,parent_id,title AS name,level,lineage,currency_id '.
+        $sql = 'SELECT id,id_parent,title AS name,level,lineage,currency_id '.
                'FROM '.TABLE_PREFIX.'account '.
                'WHERE id = "'.$db->escapeSql($account_id).'" ';
         $account = $db->readSqlRecord($sql);
@@ -403,7 +403,7 @@ class Helpers {
         $sql .= 'ORDER BY P.name , A.name ';
         $assets = $db->readSqlArray($sql);
         if($assets === 0) {
-            $error = 'No Transactions exist for portfolio.';
+            $error = 'No Transactions exist for portfolios.';
             return false;
         }
 

@@ -143,7 +143,12 @@ class Report extends ReportTool
             $account_id = $form['account_id'];
         } else {
             $account_id = 'ALL';
-        }    
+        } 
+
+        if($account_id !== 'ALL') {
+            $account = Helpers::getAccount($this->db,$account_id);
+            $html .= '<h2>Account: '.$account['name'].'</h2>';
+        }  
 
         if($form['portfolio_id'] === 'ALL') {
             $html .= '<h2>(ALL PORTFOLIOS, values expressed in currency - '.$form['currency_id'].')</h2>';
