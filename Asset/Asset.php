@@ -15,7 +15,7 @@ class Asset extends Table
 
         $this->addForeignKey(array('table'=>TABLE_PREFIX.'transact','col_id'=>'asset_id','message'=>'Transactions exist for this Asset'));  
 
-        $this->addTableCol(array('id'=>'asset_id','type'=>'INTEGER','title'=>'Asset ID','key'=>true,'key_auto'=>true,'list'=>false));
+        $this->addTableCol(array('id'=>'asset_id','type'=>'INTEGER','title'=>'Asset ID','key'=>true,'key_auto'=>true,'list'=>true));
         $this->addTableCol(array('id'=>'name','type'=>'STRING','title'=>'Asset name'));
         $this->addTableCol(array('id'=>'type_id','type'=>'STRING','title'=>'Type'));
         $this->addTableCol(array('id'=>'currency_id','type'=>'STRING','title'=>'Currency'));
@@ -44,7 +44,7 @@ class Asset extends Table
                                   
         $this->setupFiles(array('table'=>TABLE_PREFIX.'file','location'=>'ASSDOC','max_no'=>100,
                                 'icon'=>'<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp;&nbsp;manage',
-                                'list'=>true,'list_no'=>1,'storage'=>STORAGE,
+                                'list'=>true,'list_no'=>5,'storage'=>STORAGE,
                                 'link_url'=>'asset_file','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
     }
 

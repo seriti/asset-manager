@@ -33,10 +33,10 @@ class AssetImage extends Upload
         $param['show_sql'] = 'SELECT CONCAT("Asset: ",name) FROM '.TABLE_PREFIX.'asset WHERE asset_id = "{KEY_VAL}"';
         $this->setupMaster($param);
 
-        $this->addAction('delete');
-
-        //$this->setupImages($param);
-
+        $this->addAction('check_box');
+        $this->addAction('edit');
+        $this->addAction(['type'=>'delete','text'=>'Delete','pos'=>'R']);
+        
         //$access['read_only'] = true;                         
         //$this->modifyAccess($access);
     }
