@@ -69,26 +69,26 @@ class Ajax
 
         $account_id = Secure::clean('alpha',$form['account_id']);
         if($account_id === 'ALL') {
-            $sql = 'SELECT portfolio_id,name FROM '.$this->table_prefix.'portfolio '.
-                   'WHERE status = "OK" '.
-                   'ORDER BY name';
+            $sql = 'SELECT `portfolio_id`,`name` FROM `'.$this->table_prefix.'portfolio` '.
+                   'WHERE `status` = "OK" '.
+                   'ORDER BY `name`';
             $portfolios = $this->db->readSqlList($sql);
             $account['title'] = ''; 
         } else {
             $account_id = $this->db->escapeSql($account_id);
              
             //get account details and lineage
-            $sql = 'SELECT id,title,currency_id '.
-                   'FROM '.$this->table_prefix.'account WHERE id = "'.$account_id.'" ';
+            $sql = 'SELECT `id`,`title`,`currency_id` '.
+                   'FROM `'.$this->table_prefix.'account` WHERE `id` = "'.$account_id.'" ';
             $account = $this->db->readSqlRecord($sql);
                        
             //get all portfolios belonging to account OR sub-accounts
             //NB: A.lineage is in csv format already
-            $sql = 'SELECT P.portfolio_id,P.name '.
-                   'FROM '.$this->table_prefix.'portfolio AS P '.
-                   'JOIN '.$this->table_prefix.'account AS A ON(P.account_id = A.id)'.
-                   'WHERE (P.account_id = "'.$account_id.'" OR FIND_IN_SET("'.$account_id.'",A.lineage) > 0) '.
-                   'ORDER BY P.name';
+            $sql = 'SELECT P.`portfolio_id`,P.`name` '.
+                   'FROM `'.$this->table_prefix.'portfolio` AS P '.
+                   'JOIN `'.$this->table_prefix.'account` AS A ON(P.`account_id` = A.`id`)'.
+                   'WHERE (P.`account_id` = "'.$account_id.'" OR FIND_IN_SET("'.$account_id.'",A.`lineage`) > 0) '.
+                   'ORDER BY P.`name`';
             $portfolios = $this->db->readSqlList($sql);    
         }
               

@@ -30,7 +30,7 @@ class AssetImage extends Upload
         $param['label']     = 'name';
         $param['child_col'] = 'location_id';
         $param['child_prefix'] = $id_prefix;
-        $param['show_sql'] = 'SELECT CONCAT("Asset: ",name) FROM '.TABLE_PREFIX.'asset WHERE asset_id = "{KEY_VAL}"';
+        $param['show_sql'] = 'SELECT CONCAT("Asset: ",`name`) FROM `'.TABLE_PREFIX.'asset` WHERE `asset_id` = "{KEY_VAL}"';
         $this->setupMaster($param);
 
         $this->addAction('check_box');

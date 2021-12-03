@@ -16,7 +16,7 @@ class Account extends Tree
 
         $this->addTreeCol(array('id'=>'currency_id','type'=>'STRING','title'=>'Account base currency'));
 
-        $this->addSelect('currency_id','SELECT currency_id, name FROM '.TABLE_PREFIX.'currency ORDER BY name');
+        $this->addSelect('currency_id','SELECT `currency_id`, `name` FROM `'.TABLE_PREFIX.'currency` ORDER BY `name`');
     }
 }
 

@@ -27,12 +27,14 @@ class AssetFile extends Upload
         $param['label']     = 'name';
         $param['child_col'] = 'location_id';
         $param['child_prefix'] = $id_prefix;
-        $param['show_sql'] = 'SELECT CONCAT("Asset: ",name) FROM '.TABLE_PREFIX.'asset WHERE asset_id = "{KEY_VAL}"';
+        $param['show_sql'] = 'SELECT CONCAT("Asset: ",`name`) FROM `'.TABLE_PREFIX.'asset` WHERE `asset_id` = "{KEY_VAL}"';
         $this->setupMaster($param);
 
         $this->addAction('check_box');
         $this->addAction('edit');
         $this->addAction(['type'=>'delete','text'=>'Delete','pos'=>'R']);
+
+        $this->addSearch(['file_name_orig','file_date','file_size'],['rows'=>2]);
 
         //$access['read_only'] = true;                         
         //$this->modifyAccess($access);

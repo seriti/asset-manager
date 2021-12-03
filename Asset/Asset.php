@@ -22,7 +22,7 @@ class Asset extends Table
         $this->addTableCol(array('id'=>'description','type'=>'STRING','title'=>'Description','size'=>40,'required'=>false));
         $this->addTableCol(array('id'=>'status','type'=>'STRING','title'=>'Status'));
 
-        $this->addSortOrder('T.type_id, T.name','Type & Name','DEFAULT');
+        $this->addSortOrder('T.`type_id`, T.`name`','Type & Name','DEFAULT');
 
         $this->addAction(array('type'=>'check_box','text'=>''));
         $this->addAction(array('type'=>'edit','text'=>'edit'));
@@ -34,7 +34,7 @@ class Asset extends Table
             
         $this->addSelect('status','(SELECT "OK") UNION (SELECT "HIDE")');
         $this->addSelect('type_id',array('list'=>ASSET_TYPE));
-        $this->addSelect('currency_id','SELECT currency_id,name FROM '.TABLE_PREFIX.'currency ORDER BY name');
+        $this->addSelect('currency_id','SELECT `currency_id`,`name` FROM `'.TABLE_PREFIX.'currency` ORDER BY `name`');
 
         $this->setupImages(array('table'=>TABLE_PREFIX.'file','location'=>'ASSIMG','max_no'=>100,
                                   'icon'=>'<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>&nbsp;manage',
@@ -44,7 +44,7 @@ class Asset extends Table
                                   
         $this->setupFiles(array('table'=>TABLE_PREFIX.'file','location'=>'ASSDOC','max_no'=>100,
                                 'icon'=>'<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp;&nbsp;manage',
-                                'list'=>true,'list_no'=>5,'storage'=>STORAGE,
+                                'list'=>true,'list_no'=>5,'storage'=>STORAGE,'search'=>true,
                                 'link_url'=>'asset_file','link_data'=>'SIMPLE','width'=>'700','height'=>'600'));
     }
 
@@ -68,10 +68,10 @@ class Asset extends Table
     protected function afterDelete($id) {
         $error = '';
         //remove all asset related data
-        $sql = 'DELETE FROM '.TABLE_PREFIX.'price WHERE asset_id = "'.$this->db->escapeSql($id).'" ';
+        $sql = 'DELETE FROM `'.TABLE_PREFIX.'price` WHERE `asset_id` = "'.$this->db->escapeSql($id).'" ';
         $this->db->executeSql($sql,$error);
 
-        $sql = 'DELETE FROM '.TABLE_PREFIX.'note WHERE location_id = "ASSET'.$this->db->escapeSql($id).'" ';
+        $sql = 'DELETE FROM `'.TABLE_PREFIX.'note` WHERE `location_id` = "ASSET'.$this->db->escapeSql($id).'" ';
         $this->db->executeSql($sql,$error);
     } 
 } 

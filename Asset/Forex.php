@@ -18,14 +18,14 @@ class Forex extends Table
         $this->addTableCol(array('id'=>'month','type'=>'INTEGER','title'=>'Month','new'=>date('m')));
         $this->addTableCol(array('id'=>'rate','type'=>'DECIMAL','title'=>'Convert to Portfolio rate'));
 
-        $this->addSortOrder('T.Year DESC, T.month DESC ','Most recent first','DEFAULT');
+        $this->addSortOrder('T.`Year` DESC, T.`month` DESC ','Most recent first','DEFAULT');
 
         $this->addAction(array('type'=>'edit','text'=>'edit'));
         $this->addAction(array('type'=>'delete','text'=>'delete','pos'=>'R'));
 
         $this->addSearch(array('currency_id_transact','year','month','rate'),array('rows'=>1));
 
-        $this->addSelect('currency_id_transact','SELECT currency_id, name FROM '.TABLE_PREFIX.'currency ORDER BY currency_id');
-        $this->addSelect('currency_id_portfolio','SELECT currency_id, name FROM '.TABLE_PREFIX.'currency ORDER BY currency_id');
+        $this->addSelect('currency_id_transact','SELECT `currency_id`, `name` FROM `'.TABLE_PREFIX.'currency` ORDER BY `currency_id`');
+        $this->addSelect('currency_id_portfolio','SELECT `currency_id`, `name` FROM `'.TABLE_PREFIX.'currency` ORDER BY `currency_id`');
     }    
 }

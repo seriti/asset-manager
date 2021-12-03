@@ -118,9 +118,9 @@ class Helpers {
         }
 
         if($portfolio_id === 'ALL') {            
-            $sql = 'SELECT portfolio_id,name FROM '.TABLE_PREFIX.'portfolio  WHERE status = "OK"';
+            $sql = 'SELECT `portfolio_id`,`name` FROM `'.TABLE_PREFIX.'portfolio`  WHERE `status` = "OK"';
         } else {
-            $sql = 'SELECT portfolio_id,name FROM '.TABLE_PREFIX.'portfolio  WHERE portfolio_id = "'.$db->escapeSql($portfolio_id).'"';
+            $sql = 'SELECT `portfolio_id`,`name` FROM `'.TABLE_PREFIX.'portfolio`  WHERE `portfolio_id` = "'.$db->escapeSql($portfolio_id).'"';
         }
         $portfolios = $db->readSqlList($sql);    
 
@@ -229,9 +229,9 @@ class Helpers {
 
     //NB: Account table is a tree
     public static function getAccount($db,$account_id) {
-        $sql = 'SELECT id,id_parent,title AS name,level,lineage,currency_id '.
-               'FROM '.TABLE_PREFIX.'account '.
-               'WHERE id = "'.$db->escapeSql($account_id).'" ';
+        $sql = 'SELECT `id`,`id_parent`,`title` AS `name`,`level`,`lineage`,`currency_id` '.
+               'FROM `'.TABLE_PREFIX.'account` '.
+               'WHERE `id` = "'.$db->escapeSql($account_id).'" ';
         $account = $db->readSqlRecord($sql);
         if($account == 0) throw new Exception('ACCOUNT_HELPER_ERROR: INVALID Account ID['.$account_id.']');
         
@@ -239,9 +239,9 @@ class Helpers {
     } 
 
     public static function getPortfolio($db,$portfolio_id) {
-        $sql = 'SELECT portfolio_id AS id,name,description,status,date_start,date_end,currency_id,calc_timestamp '.
-               'FROM '.TABLE_PREFIX.'portfolio '.
-               'WHERE portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
+        $sql = 'SELECT `portfolio_id` AS `id`,`name`,`description`,`status`,`date_start`,`date_end`,`currency_id`,`calc_timestamp` '.
+               'FROM `'.TABLE_PREFIX.'portfolio` '.
+               'WHERE `portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';
         $portfolio = $db->readSqlRecord($sql);
         if($portfolio == 0) throw new Exception('PORTFOLIO_HELPER_ERROR: INVALID Portfolio ID['.$portfolio_id.']');
         
@@ -251,11 +251,11 @@ class Helpers {
     public static function getTransactionPeriod($db,$portfolio_id) {
         $period = [];
 
-        $sql = 'SELECT MAX(T.date) as max_date, MIN(T.date) as min_date '.
-               'FROM  '.TABLE_PREFIX.'transact AS T ';
+        $sql = 'SELECT MAX(T.`date`) as `max_date`, MIN(T.`date`) as `min_date` '.
+               'FROM  `'.TABLE_PREFIX.'transact` AS T ';
         if($portfolio_id !== 'ALL') {
-            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" '.
-                    'GROUP BY T.portfolio_id ';
+            $sql .= 'WHERE T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" '.
+                    'GROUP BY T.`portfolio_id` ';
         }
         
         $transact = $db->readSqlRecord($sql);
@@ -277,9 +277,9 @@ class Helpers {
     }   
 
     public static function getPeriod($db,$period_id) {
-        $sql = 'SELECT period_id,portfolio_id,name,date_start,date_end,status '.
-               'FROM '.TABLE_PREFIX.'period '.
-               'WHERE period_id = "'.$db->escapeSql($period_id).'" ';
+        $sql = 'SELECT `period_id`,`portfolio_id`,`name`,`date_start`,`date_end`,`status` '.
+               'FROM `'.TABLE_PREFIX.'period` '.
+               'WHERE `period_id` = "'.$db->escapeSql($period_id).'" ';
         $period = $db->readSqlRecord($sql);
         if($period == 0) throw new Exception('PERIOD_HELPER_ERROR: INVALID Period ID['.$period_id.']');
         
@@ -295,9 +295,9 @@ class Helpers {
     }  
 
     public static function getAsset($db,$asset_id) {
-        $sql = 'SELECT asset_id,portfolio_id,name,type_id,currency_id,status '.
-               'FROM '.TABLE_PREFIX.'asset '.
-               'WHERE asset_id = "'.$db->escapeSql($asset_id).'" ';
+        $sql = 'SELECT `asset_id`,`portfolio_id`,`name`,`type_id`,`currency_id`,`status` '.
+               'FROM `'.TABLE_PREFIX.'asset` '.
+               'WHERE `asset_id` = "'.$db->escapeSql($asset_id).'" ';
         $asset = $db->readSqlRecord($sql);
         if($asset == 0) throw new Exception('ASSET_HELPER_ERROR: INVALID Asset ID['.$asset_id.']');
         
@@ -309,9 +309,9 @@ class Helpers {
         $error = '';
 
         $date = Date::getDate($transaction['date']);
-        $sql = 'SELECT * FROM '.TABLE_PREFIX.'price '.
-               'WHERE asset_id = "'.$db->escapeSql($transaction['asset_id']).'" AND '.
-                     'year = "'.$date['year'].'" AND month = "'.$date['mon'].'" ';
+        $sql = 'SELECT * FROM `'.TABLE_PREFIX.'price` '.
+               'WHERE `asset_id` = "'.$db->escapeSql($transaction['asset_id']).'" AND '.
+                     '`year` = "'.$date['year'].'" AND `month` = "'.$date['mon'].'" ';
         $price = $db->readSqlRecord($sql);
         if($price === 0) {
             $data['year'] = $date['year'];
@@ -379,28 +379,18 @@ class Helpers {
     public static function getPortfolioAssets($db,$account_id,$portfolio_id,&$error)  {
         $error = '';
        
-        $sql = 'SELECT DISTINCT(T.asset_id),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
-                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id = A.asset_id) '.
-                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '; 
+        $sql = 'SELECT DISTINCT(T.`asset_id`),A.`type_id`,A.`name`,A.`currency_id`,P.`name` AS `portfolio` '.
+               'FROM  `'.TABLE_PREFIX.'transact` AS T '.
+                      'JOIN `'.TABLE_PREFIX.'asset` AS A ON(T.`asset_id` = A.`asset_id`) '.
+                      'JOIN `'.TABLE_PREFIX.'portfolio` AS P ON(T.`portfolio_id` = P.`portfolio_id`) '; 
         if($portfolio_id !== 'ALL') {
-            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
+            $sql .= 'WHERE T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';
         } elseif($account_id !== 'ALL') {
-            $sql .= 'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '.
-                    'WHERE (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';
+            $sql .= 'JOIN `'.TABLE_PREFIX.'account` AS ACC ON(P.`account_id` = ACC.`id`) '.
+                    'WHERE (P.`account_id` = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.`lineage`) > 0) ';
         }
 
-        /*
-        $sql = 'SELECT DISTINCT(T.asset_id),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
-                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id = A.asset_id) '.
-                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) ';
-        if($portfolio_id !== 'ALL') {
-            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        }  
-        */
-
-        $sql .= 'ORDER BY P.name , A.name ';
+        $sql .= 'ORDER BY P.`name` , A.`name` ';
         $assets = $db->readSqlArray($sql);
         if($assets === 0) {
             $error = 'No Transactions exist for portfolios.';
@@ -408,25 +398,17 @@ class Helpers {
         }
 
         //NB:sometimes no trades booked directly to linked assets
-        $sql = 'SELECT DISTINCT(T.asset_id_link),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
-                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id_link = A.asset_id) '.
-                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) ';
+        $sql = 'SELECT DISTINCT(T.`asset_id_link`),A.`type_id`,A.`name`,A.`currency_id`,P.`name` AS `portfolio` '.
+               'FROM  `'.TABLE_PREFIX.'transact` AS T '.
+                      'JOIN `'.TABLE_PREFIX.'asset` AS A ON(T.`asset_id_link` = A.`asset_id`) '.
+                      'JOIN `'.TABLE_PREFIX.'portfolio` AS P ON(T.`portfolio_id` = P.`portfolio_id`) ';
         if($portfolio_id !== 'ALL') {
-            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
+            $sql .= 'WHERE T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';
         } elseif($account_id !== 'ALL') {
-            $sql .= 'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '.
-                    'WHERE (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';
+            $sql .= 'JOIN `'.TABLE_PREFIX.'account` AS ACC ON(P.`account_id` = ACC.id) '.
+                    'WHERE (P.`account_id` = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.`lineage`) > 0) ';
         }              
-        /*
-        $sql = 'SELECT DISTINCT(T.asset_id_link),A.type_id,A.name,A.currency_id,P.name AS portfolio '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
-                      'JOIN '.TABLE_PREFIX.'asset AS A ON(T.asset_id_link = A.asset_id) '.
-                      'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) ';
-        if($portfolio_id !== 'ALL') {
-            $sql .= 'WHERE T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        } 
-        */
+
         $assets_linked = $db->readSqlArray($sql);
         if($assets_linked !== 0) {
             //do NOT use array_merge() it will overwrite asset_id key!!
@@ -465,26 +447,26 @@ class Helpers {
         $months_cut = $date['year'] * 12 + $date['mon'];
 
         //check asset prices for first valid price before cutoff
-        $sql = 'SELECT price FROM  '.TABLE_PREFIX.'price '.
-               'WHERE asset_id = "'.$db->escapeSql($asset_id).'" AND '.
-                     '(year * 12 + month) <= "'.$months_cut.'" '.
-               'ORDER BY year DESC, month DESC LIMIT 1'; 
+        $sql = 'SELECT `price` FROM  `'.TABLE_PREFIX.'price` '.
+               'WHERE `asset_id` = "'.$db->escapeSql($asset_id).'" AND '.
+                     '(`year` * 12 + `month`) <= "'.$months_cut.'" '.
+               'ORDER BY `year` DESC, `month` DESC LIMIT 1'; 
         $price = $db->readSqlValue($sql,0);
 
         //then check transactions for first valid price before cutoff
         if($price === 0) {
-            $sql = 'SELECT price FROM  '.TABLE_PREFIX.'transact '.
-                   'WHERE asset_id = "'.$db->escapeSql($asset_id).'" AND '.
-                         'date <= "'.$date_cut.'" '.
-                   'ORDER BY date DESC LIMIT 1'; 
+            $sql = 'SELECT `price` FROM  `'.TABLE_PREFIX.'transact` '.
+                   'WHERE `asset_id` = "'.$db->escapeSql($asset_id).'" AND '.
+                         '`date` <= "'.$date_cut.'" '.
+                   'ORDER BY `date` DESC LIMIT 1'; 
             $price = $db->readSqlValue($sql,0);
         }
 
         //finally use first valid price 
         if($price === 0) {
-            $sql = 'SELECT price FROM  '.TABLE_PREFIX.'price '.
-                   'WHERE asset_id = "'.$db->escapeSql($asset_id).'" '.
-                   'ORDER BY year, month LIMIT 1'; 
+            $sql = 'SELECT `price` FROM  `'.TABLE_PREFIX.'price` '.
+                   'WHERE `asset_id` = "'.$db->escapeSql($asset_id).'" '.
+                   'ORDER BY `year`, `month` LIMIT 1'; 
             $price = $db->readSqlValue($sql,0);
         }
 
@@ -498,39 +480,39 @@ class Helpers {
         $months_cut = $date['year'] * 12 + $date['mon'];
 
         //first try standard currency pair
-        $sql = 'SELECT rate FROM  '.TABLE_PREFIX.'forex '.
-               'WHERE currency_id_portfolio = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
-                     'currency_id_transact = "'.$db->escapeSql($currency_id_asset).'" AND '.
-                     '(year * 12 + month) <= "'.$months_cut.'" '.
-               'ORDER BY year DESC, month DESC LIMIT 1'; 
+        $sql = 'SELECT `rate` FROM  `'.TABLE_PREFIX.'forex` '.
+               'WHERE `currency_id_portfolio` = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
+                     '`currency_id_transact` = "'.$db->escapeSql($currency_id_asset).'" AND '.
+                     '(`year` * 12 + `month`) <= "'.$months_cut.'" '.
+               'ORDER BY `year` DESC, `month` DESC LIMIT 1'; 
         $rate = $db->readSqlValue($sql,0);
 
         //then invert currency pair 
         if($rate === 0) {
-            $sql = 'SELECT rate FROM  '.TABLE_PREFIX.'forex '.
-                   'WHERE currency_id_portfolio = "'.$db->escapeSql($currency_id_asset).'" AND '.
-                         'currency_id_transact = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
-                         '(year * 12 + month) <= "'.$months_cut.'" '.
-                   'ORDER BY year DESC, month DESC LIMIT 1'; 
+            $sql = 'SELECT `rate` FROM  `'.TABLE_PREFIX.'forex` '.
+                   'WHERE `currency_id_portfolio` = "'.$db->escapeSql($currency_id_asset).'" AND '.
+                         '`currency_id_transact` = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
+                         '(`year` * 12 + `month`) <= "'.$months_cut.'" '.
+                   'ORDER BY `year` DESC, `month` DESC LIMIT 1'; 
             $rate = $db->readSqlValue($sql,0);
             if($rate !== 0) $rate = 1 / $rate;
         }
 
         //then try first valid standard currency pair
         if($rate === 0) {
-            $sql = 'SELECT rate FROM  '.TABLE_PREFIX.'forex '.
-                   'WHERE currency_id_portfolio = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
-                         'currency_id_transact = "'.$db->escapeSql($currency_id_asset).'" '.
-                   'ORDER BY year, month LIMIT 1'; 
+            $sql = 'SELECT `rate` FROM  `'.TABLE_PREFIX.'forex` '.
+                   'WHERE `currency_id_portfolio` = "'.$db->escapeSql($currency_id_portfolio).'" AND '.
+                         '`currency_id_transact` = "'.$db->escapeSql($currency_id_asset).'" '.
+                   'ORDER BY `year`, `month` LIMIT 1'; 
             $rate = $db->readSqlValue($sql,0);
         }
 
         //finally try first valid inverted currency pair
         if($rate === 0) {
-            $sql = 'SELECT rate FROM  '.TABLE_PREFIX.'forex '.
-                   'WHERE currency_id_portfolio = "'.$db->escapeSql($currency_id_asset).'" AND '.
-                         'currency_id_transact = "'.$db->escapeSql($currency_id_portfolio).'" '.
-                   'ORDER BY year, month LIMIT 1'; 
+            $sql = 'SELECT `rate` FROM  `'.TABLE_PREFIX.'forex` '.
+                   'WHERE `currency_id_portfolio` = "'.$db->escapeSql($currency_id_asset).'" AND '.
+                         '`currency_id_transact` = "'.$db->escapeSql($currency_id_portfolio).'" '.
+                   'ORDER BY `year`, `month` LIMIT 1'; 
             $rate = $db->readSqlValue($sql,0);
             if($rate !== 0) $rate = 1 / $rate;
         }
@@ -577,12 +559,12 @@ class Helpers {
                 //get first valid price before from date
                 $first_price = self::getFirstAssetPrice($db,$asset_id,$date_from);
 
-                $sql = 'SELECT year,month,price '.
-                       'FROM  '.TABLE_PREFIX.'price '.
-                       'WHERE asset_id = "'.$db->escapeSql($asset_id).'" AND '.
-                             '(year * 12 + month) >= "'.$from_month_count.'" AND '.
-                             '(year * 12 + month) <= "'.$to_month_count.'" '.
-                       'ORDER BY year, month'; 
+                $sql = 'SELECT `year`,`month`,`price` '.
+                       'FROM  `'.TABLE_PREFIX.'price` '.
+                       'WHERE `asset_id` = "'.$db->escapeSql($asset_id).'" AND '.
+                             '(`year` * 12 + `month`) >= "'.$from_month_count.'" AND '.
+                             '(`year` * 12 + `month`) <= "'.$to_month_count.'" '.
+                       'ORDER BY `year`, `month`'; 
                 $first_col_key = false;
                 $asset_prices = $db->readSqlArray($sql,$first_col_key);
                 if($asset_prices !== 0) {
@@ -616,13 +598,13 @@ class Helpers {
                 $first_rate = self::getFirstForexRate($db,$currency_id,$asset_currency_id,$date_from);
                 $rate_count = 0;
 
-                $sql = 'SELECT year,month,rate '.
-                       'FROM  '.TABLE_PREFIX.'forex '.
-                       'WHERE currency_id_portfolio = "'.$db->escapeSql($currency_id).'" AND '.
-                             'currency_id_transact = "'.$db->escapeSql($asset_currency_id).'" AND '.
-                             '(year * 12 + month) >= "'.$from_month_count.'" AND '.
-                             '(year * 12 + month) <= "'.$to_month_count.'" '.
-                       'ORDER BY year, month'; 
+                $sql = 'SELECT `year`,`month`,`rate` '.
+                       'FROM  `'.TABLE_PREFIX.'forex` '.
+                       'WHERE `currency_id_portfolio` = "'.$db->escapeSql($currency_id).'" AND '.
+                             '`currency_id_transact` = "'.$db->escapeSql($asset_currency_id).'" AND '.
+                             '(`year` * 12 + `month`) >= "'.$from_month_count.'" AND '.
+                             '(`year` * 12 + `month`) <= "'.$to_month_count.'" '.
+                       'ORDER BY `year`, `month`'; 
                 $first_col_key = false;
                 $fx_rates = $db->readSqlArray($sql,$first_col_key);
                 if($fx_rates !== 0) {
@@ -636,13 +618,13 @@ class Helpers {
                 //use inverse rate data if standard rates not complete
                 
                 if($rate_count !== count($months)) {
-                    $sql = 'SELECT year,month,rate '.
-                           'FROM  '.TABLE_PREFIX.'forex '.
-                           'WHERE currency_id_portfolio = "'.$db->escapeSql($asset_currency_id).'" AND '.
-                                 'currency_id_transact = "'.$db->escapeSql($currency_id).'" AND '.
-                                 '(year * 12 + month) >= "'.$from_month_count.'" AND '.
-                                 '(year * 12 + month) <= "'.$to_month_count.'" '.
-                           'ORDER BY year, month'; 
+                    $sql = 'SELECT `year`,`month`,`rate` '.
+                           'FROM  `'.TABLE_PREFIX.'forex` '.
+                           'WHERE `currency_id_portfolio` = "'.$db->escapeSql($asset_currency_id).'" AND '.
+                                 '`currency_id_transact` = "'.$db->escapeSql($currency_id).'" AND '.
+                                 '(`year` * 12 + `month`) >= "'.$from_month_count.'" AND '.
+                                 '(`year` * 12 + `month`) <= "'.$to_month_count.'" '.
+                           'ORDER BY `year`, `month`'; 
                     $fx_rates = $db->readSqlArray($sql,$first_col_key);
                     if($fx_rates !== 0) {
                         foreach($fx_rates as $rate) {
@@ -687,33 +669,21 @@ class Helpers {
 
         //setup sql fragments
         $sql_join = '';
-        $sql_where = 'WHERE T.date < "'.$db->escapeSql($date_balance).'"  ';
+        $sql_where = 'WHERE T.`date` < "'.$db->escapeSql($date_balance).'"  ';
 
         if($portfolio_id !== 'ALL') {
-            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+            $sql_where .= 'AND T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';           
         } elseif($account_id !== 'ALL') {
-            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
-                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+            $sql_join .= 'JOIN `'.TABLE_PREFIX.'portfolio` AS P ON(T.`portfolio_id` = P.`portfolio_id`) '.
+                         'JOIN `'.TABLE_PREFIX.'account` AS ACC ON(P.`account_id` = ACC.`id`) '; 
 
-            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+            $sql_where .= 'AND (P.`account_id` = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.`lineage`) > 0) ';         
         }
         //final sql statement
-        $sql = 'SELECT T.asset_id,T.asset_id_link,T.type_id,SUM(T.nominal) AS net_nominal,SUM(T.amount) AS net_amount '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
+        $sql = 'SELECT T.`asset_id`,T.`asset_id_link`,T.`type_id`,SUM(T.`nominal`) AS `net_nominal`,SUM(T.`amount`) AS `net_amount` '.
+               'FROM  `'.TABLE_PREFIX.'transact` AS T '.
                $sql_join.$sql_where.
-               'GROUP BY T.asset_id,T.asset_id_link,T.type_id ';
-               
-
-        /*    
-        //could do all in query with if statements if speed ever an issue
-        $sql = 'SELECT T.asset_id,T.asset_id_link,T.type_id,SUM(T.nominal) AS net_nominal,SUM(T.amount) AS net_amount '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
-               'WHERE T.date < "'.$db->escapeSql($date_balance).'"  ';
-        if($portfolio_id !== 'ALL') {
-            $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        } 
-        $sql .= 'GROUP BY T.asset_id,T.asset_id_link,T.type_id ';
-        */
+               'GROUP BY T.`asset_id`,T.`asset_id_link`,T.`type_id` ';
 
         $first_col_key = false;
         $transact_nominals = $db->readSqlArray($sql,$first_col_key);
@@ -797,38 +767,25 @@ class Helpers {
 
         
         //setup sql fragments
-        $sql_join = 'JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) ';
-        $sql_where = 'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
-                           'T.date <= "'.$db->escapeSql($date_to).'"  ';
+        $sql_join = 'JOIN `'.TABLE_PREFIX.'asset` as A ON(T.`asset_id` = A.`asset_id`) ';
+        $sql_where = 'WHERE T.`date` >= "'.$db->escapeSql($date_from).'" AND '.
+                           'T.`date` <= "'.$db->escapeSql($date_to).'"  ';
 
         if($portfolio_id !== 'ALL') {
-            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+            $sql_where .= 'AND T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';           
         } elseif($account_id !== 'ALL') {
-            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
-                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+            $sql_join .= 'JOIN `'.TABLE_PREFIX.'portfolio` AS P ON(T.`portfolio_id` = P.`portfolio_id`) '.
+                         'JOIN `'.TABLE_PREFIX.'account` AS ACC ON(P.`account_id` = ACC.`id`) '; 
 
-            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+            $sql_where .= 'AND (P.`account_id` = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.`lineage`) > 0) ';         
         }
         //final sql statement
-        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
-                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
-               'FROM  '.TABLE_PREFIX.'transact AS T '.
+        $sql = 'SELECT T.`transact_id`,CONCAT(YEAR(T.`date`),":",MONTH(T.`date`)) AS `month_key`,T.`date`,T.`type_id`,'.
+                      'T.`asset_id`,T.`asset_id_link`,A.`currency_id`,T.`nominal`,T.`price`,T.`amount` '.
+               'FROM  `'.TABLE_PREFIX.'transact` AS T '.
                $sql_join.$sql_where.
-               'ORDER BY T.date ';
-                      
-
-        /*       
-        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
-                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
-               'FROM  '.TABLE_PREFIX.'transact AS T JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) '.
-               'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
-                     'T.date <= "'.$db->escapeSql($date_to).'"  ';
-        if($portfolio_id !== 'ALL') {
-            $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        }             
-        $sql .= 'ORDER BY T.date ';
-        */
-
+               'ORDER BY T.`date` ';
+        
         //finally process all transactions over report period
         $transactions = $db->readSqlArray($sql);           
         
@@ -977,36 +934,24 @@ class Helpers {
        
         //NB: IDENTICAL SQL CODE IN PERFORMANCE REPORT, NEED TO CONSOLIDATE
         //setup sql fragments
-        $sql_join = 'JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) ';
-        $sql_where = 'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
-                           'T.date <= "'.$db->escapeSql($date_to).'"  ';
+        $sql_join = 'JOIN `'.TABLE_PREFIX.'asset` as A ON(T.`asset_id` = A.`asset_id`) ';
+        $sql_where = 'WHERE T.`date` >= "'.$db->escapeSql($date_from).'" AND '.
+                           'T.`date` <= "'.$db->escapeSql($date_to).'"  ';
 
         if($portfolio_id !== 'ALL') {
-            $sql_where .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';           
+            $sql_where .= 'AND T.`portfolio_id` = "'.$db->escapeSql($portfolio_id).'" ';           
         } elseif($account_id !== 'ALL') {
-            $sql_join .= 'JOIN '.TABLE_PREFIX.'portfolio AS P ON(T.portfolio_id = P.portfolio_id) '.
-                         'JOIN '.TABLE_PREFIX.'account AS ACC ON(P.account_id = ACC.id) '; 
+            $sql_join .= 'JOIN `'.TABLE_PREFIX.'portfolio` AS P ON(T.`portfolio_id` = P.`portfolio_id`) '.
+                         'JOIN `'.TABLE_PREFIX.'account` AS ACC ON(P.`account_id` = ACC.`id`) '; 
 
-            $sql_where .= 'AND (P.account_id = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.lineage) > 0) ';         
+            $sql_where .= 'AND (P.`account_id` = "'.$db->escapeSql($account_id).'" OR FIND_IN_SET("'.$db->escapeSql($account_id).'",ACC.`lineage`) > 0) ';         
         }
         //final sql statement
-        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
-                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
+        $sql = 'SELECT T.`transact_id`,CONCAT(YEAR(T.`date`),":",MONTH(T.`date`)) AS `month_key`,T.`date`,T.`type_id`,'.
+                      'T.`asset_id`,T.`asset_id_link`,A.`currency_id`,T.`nominal`,T.`price`,T.`amount` '.
                'FROM  '.TABLE_PREFIX.'transact AS T '.
                $sql_join.$sql_where.
-               'ORDER BY T.date ';
-
-        /*       
-        $sql = 'SELECT T.transact_id,CONCAT(YEAR(T.date),":",MONTH(T.date)) AS month_key,T.date,T.type_id,'.
-                      'T.asset_id,T.asset_id_link,A.currency_id,T.nominal,T.price,T.amount '.
-               'FROM  '.TABLE_PREFIX.'transact AS T JOIN '.TABLE_PREFIX.'asset as A ON(T.asset_id = A.asset_id) '.
-               'WHERE T.date >= "'.$db->escapeSql($date_from).'" AND '.
-                     'T.date <= "'.$db->escapeSql($date_to).'"  ';
-        if($portfolio_id !== 'ALL') {
-            $sql .= 'AND T.portfolio_id = "'.$db->escapeSql($portfolio_id).'" ';
-        } 
-        $sql .= 'ORDER BY T.date ';
-        */
+               'ORDER BY T.`date` ';
 
         //process all transactions over report period
         $transactions = $db->readSqlArray($sql);           
@@ -1181,10 +1126,10 @@ class Helpers {
         
         $date = $db->escapeSql($date);
         
-        $sql = 'SELECT name,status,date_start,date_end '.
-               'FROM '.TABLE_PREFIX.'period '.
-               'WHERE portfolio_id = "'.$db->escapeSql($portfolio_id).'" AND '.
-                     'date_start <= "'.$date.'" AND date_end >= "'.$date.'" LIMIT 1 ';
+        $sql = 'SELECT `name`,`status`,`date_start`,`date_end` '.
+               'FROM `'.TABLE_PREFIX.'period` '.
+               'WHERE `portfolio_id` = "'.$db->escapeSql($portfolio_id).'" AND '.
+                     '`date_start` <= "'.$date.'" AND `date_end` >= "'.$date.'" LIMIT 1 ';
         $period = $db->readSqlRecord($sql);           
         if($period !== 0) {
             if($period['status'] === 'CLOSED') {

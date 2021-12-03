@@ -14,7 +14,8 @@ class Price extends Table
         parent::setup($param);        
 
         $this->addTableCol(array('id'=>'price_id','type'=>'INTEGER','title'=>'Price ID','key'=>true,'key_auto'=>true,'list'=>true));
-        $this->addTableCol(array('id'=>'asset_id','type'=>'INTEGER','title'=>'Asset','join'=>'name FROM '.TABLE_PREFIX.'asset WHERE asset_id'));
+        $this->addTableCol(array('id'=>'asset_id','type'=>'INTEGER','title'=>'Asset',
+                                 'join'=>'`name` FROM `'.TABLE_PREFIX.'asset` WHERE `asset_id`'));
         $this->addTableCol(array('id'=>'year','type'=>'INTEGER','title'=>'Year','new'=>date('Y')));
         $this->addTableCol(array('id'=>'month','type'=>'INTEGER','title'=>'Month','new'=>date('m')));
         $this->addTableCol(array('id'=>'price','type'=>'DECIMAL','title'=>'Asset price'));
@@ -27,6 +28,6 @@ class Price extends Table
         
         $this->addSearch(array('asset_id','year','month','price'),array('rows'=>1));
 
-        $this->addSelect('asset_id','SELECT asset_id,name FROM '.TABLE_PREFIX.'asset WHERE type_id <> "CASH" ORDER BY name'); 
+        $this->addSelect('asset_id','SELECT `asset_id`,`name` FROM `'.TABLE_PREFIX.'asset` WHERE `type_id` <> "CASH" ORDER BY `name`'); 
     }
 }

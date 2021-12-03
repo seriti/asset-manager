@@ -57,7 +57,7 @@ class Report extends ReportTool
             $param['class'] = 'form-control input-medium';
             $param['xtra'] = ['ALL'=>'All accounts'];
             $param['onchange'] = 'account_change()';
-            $sql = 'SELECT id,CONCAT(IF(level > 1,REPEAT("--",level - 1),""),title) FROM '.TABLE_PREFIX.'account  ORDER BY rank';
+            $sql = 'SELECT `id`,CONCAT(IF(`level` > 1,REPEAT("--",`level` - 1),""),`title`) FROM `'.TABLE_PREFIX.'account`  ORDER BY `rank`';
             if(isset($form['account_id'])) $account_id = $form['account_id']; else $account_id = 'ALL';
             $html .= Form::sqlList($sql,$this->db,'account_id',$account_id,$param);
         }
@@ -66,7 +66,7 @@ class Report extends ReportTool
             $param = [];
             $param['class'] = 'form-control input-medium';
             $param['xtra'] = ['ALL'=>'All portfolios'];
-            $sql = 'SELECT portfolio_id,name FROM '.TABLE_PREFIX.'portfolio WHERE status = "OK" ORDER BY name'; 
+            $sql = 'SELECT `portfolio_id`,`name` FROM `'.TABLE_PREFIX.'portfolio` WHERE `status` = "OK" ORDER BY `name`'; 
             if(isset($form['portfolio_id'])) $portfolio_id = $form['portfolio_id']; else $portfolio_id = 'ALL';
             $html .= Form::sqlList($sql,$this->db,'portfolio_id',$portfolio_id,$param);
         }
@@ -74,7 +74,7 @@ class Report extends ReportTool
         if($id === 'select_currency') {
             $param = [];
             $param['class'] = 'form-control input-medium';
-            $sql = 'SELECT currency_id,CONCAT("In: ",name) FROM '.TABLE_PREFIX.'currency ORDER BY name'; 
+            $sql = 'SELECT `currency_id`,CONCAT("In: ",`name`) FROM `'.TABLE_PREFIX.'currency` ORDER BY `name`'; 
             if(isset($form['currency_id'])) $currency_id = $form['currency_id']; else $currency_id = CURRENCY_ID;
             $html .= Form::sqlList($sql,$this->db,'currency_id',$currency_id,$param);
         }
@@ -115,9 +115,9 @@ class Report extends ReportTool
         if($id === 'select_period') {
             $param = [];
             $param['class'] = 'form-control input-large';
-            $sql = 'SELECT period_id,CONCAT(name," : ",date_start," -> ",date_end) as period_name '.
-                   'FROM '.TABLE_PREFIX.'period '.
-                   'ORDER BY date_start '; 
+            $sql = 'SELECT `period_id`,CONCAT(`name`," : ",`date_start`," -> ",`date_end`) as `period_name` '.
+                   'FROM `'.TABLE_PREFIX.'period` '.
+                   'ORDER BY `date_start` '; 
             if(isset($form['period_id'])) $period_id = $form['period_id']; else $period_id = '';
             $html .= Form::sqlList($sql,$this->db,'period_id',$period_id,$param);
         }

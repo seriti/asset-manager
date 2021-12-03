@@ -163,13 +163,13 @@ class SetupData extends SetupModuledata
                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8');  
 
         //initialisation
-        $this->addInitialSql('INSERT INTO `TABLE_PREFIXportfolio` (name,description,currency_id,status,date_start) '.
+        $this->addInitialSql('INSERT INTO `TABLE_PREFIXportfolio` (`name`,`description`,`currency_id`,`status`,`date_start`) '.
                              'VALUES("My Portfolio","My first portfolio","'.CURRENCY_ID.'","OK",CURDATE())');
 
-        $this->addInitialSql('INSERT INTO `TABLE_PREFIXcurrency` (currency_id,name,symbol,risk_free_rate,status) '.
+        $this->addInitialSql('INSERT INTO `TABLE_PREFIXcurrency` (`currency_id`,`name`,`symbol`,`risk_free_rate`,`status`) '.
                              'VALUES("'.CURRENCY_ID.'","'.CURRENCY_ID.'","'.CURRENCY_ID.'","5","OK")');
 
-        $this->addInitialSql('INSERT INTO `TABLE_PREFIXasset` (name,description,status,type_id,currency_id) '.
+        $this->addInitialSql('INSERT INTO `TABLE_PREFIXasset` (`name`,`description`,`status`,`type_id`,`currency_id`) '.
                              'VALUES("Bank/Trading account","Default bank/trading account","OK","CASH","'.CURRENCY_ID.'")');
 
         //updates use time stamp in ['YYYY-MM-DD HH:MM'] format, must be unique and sequential

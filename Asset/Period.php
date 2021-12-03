@@ -18,20 +18,22 @@ class Period extends Table
 
            
         $this->addTableCol(array('id'=>'period_id','type'=>'INTEGER','title'=>'Period ID','key'=>true,'key_auto'=>true,'list'=>true));
-        $this->addTableCol(array('id'=>'portfolio_id','type'=>'INTEGER','title'=>'Portfolio','join'=>'name FROM '.TABLE_PREFIX.'portfolio WHERE portfolio_id'));
+        $this->addTableCol(array('id'=>'portfolio_id','type'=>'INTEGER','title'=>'Portfolio',
+                                 'join'=>'`name` FROM `'.TABLE_PREFIX.'portfolio` WHERE `portfolio_id`'));
         $this->addTableCol(array('id'=>'name','type'=>'STRING','title'=>'Period name'));
         $this->addTableCol(array('id'=>'date_start','type'=>'DATE','title'=>'Date START'));
         $this->addTableCol(array('id'=>'date_end','type'=>'DATE','title'=>'Date END'));
         $this->addTableCol(array('id'=>'status','type'=>'STRING','title'=>'Status'));
         
-        $this->addSortOrder('T.date_start ','Start date','DEFAULT');
+        $this->addSortOrder('T.`date_start` ','Start date','DEFAULT');
 
         $this->addAction(array('type'=>'edit','text'=>'edit'));
         $this->addAction(array('type'=>'delete','text'=>'delete','pos'=>'R'));
 
         $this->addSearch(array('name','date_start','status'),array('rows'=>2));
          
-        $this->addSelect('portfolio_id','SELECT portfolio_id,CONCAT(name," - ",currency_id) FROM '.TABLE_PREFIX.'portfolio WHERE status = "OK" ORDER BY name');  
+        $this->addSelect('portfolio_id','SELECT `portfolio_id`,CONCAT(`name`," - ",`currency_id`) '.
+                                        'FROM `'.TABLE_PREFIX.'portfolio` WHERE `status` = "OK" ORDER BY `name`');  
         $this->addSelect('status','(SELECT "OPEN") UNION (SELECT "CLOSED")');
     }
    
