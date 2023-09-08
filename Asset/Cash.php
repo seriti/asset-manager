@@ -35,7 +35,7 @@ class Cash extends Table
 
         $this->addSortOrder('T.`date_create` DESC , T.`date` DESC , T.`transact_id` DESC ','Create Date, Transaction Date, most recent first','DEFAULT');
 
-        $allow_types = '"'.implode(array_keys(CASHFLOW_TYPE),'","').'"';
+        $allow_types = '"'.implode('","',array_keys(CASHFLOW_TYPE)).'"';
         $this->addSql('WHERE','T.`type_id` IN('.$allow_types.')');
 
         $this->addAction(array('type'=>'edit','text'=>'edit'));
